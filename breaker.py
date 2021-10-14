@@ -1,5 +1,7 @@
-import discord, utils, jishaku, aiohttp, aiosqlite
+import discord, utils, jishaku, aiohttp, aiosqlite, os
 from discord.ext import commands
+from dotenv import load_dotenv
+load_dotenv(verbose=True)
 
 
 class Breaker(utils.Bot):
@@ -36,4 +38,4 @@ utils.load_extensions(bot, extra_cogs=["jishaku"])
 jishaku.Flags.NO_UNDERSCORE = True
 
 
-bot.run("ODk4MDI3NTI2NjI5MjU3MzA2.YWePTg.iUwU_S0h5OxC3BaOn6AVjZoy4pc")
+bot.run(os.getenv("BREAKER_TOKEN"))

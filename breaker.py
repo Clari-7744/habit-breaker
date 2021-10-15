@@ -1,6 +1,7 @@
 import discord, utils, jishaku, aiohttp, aiosqlite, os
 from discord.ext import commands
 from dotenv import load_dotenv
+
 load_dotenv(verbose=True)
 
 
@@ -10,7 +11,7 @@ class Breaker(utils.Bot):
             commands.when_mentioned_or("&"),
             slash_commands=True,
             intents=discord.Intents.all(),
-            **kwargs
+            **kwargs,
         )
         self.session: aiohttp.ClientSession
         self.db: aiosqlite.Connection
@@ -23,19 +24,35 @@ class Breaker(utils.Bot):
             self.db: aiosqlite.Connection = connection
             await super().start(*args, **kwargs)
 
+    async def db_schema(self, *tables):
+        n = "\n"
+        schema = await (
+            await bot.db.execute(
+                f"SELECT sql FROM sqlite_master"
+                + (
+                    " WHERE name IN ({})".format(
+                        ", ".join(f"'{table}'" for table in tables)
+                    )
+                    if tables
+                    else ""
+                )
+            )
+        ).fetchall()
+        return f"```sql\n{n.join([''.join(x) for x in schema if any(x) and not x[0].startswith('sqlite_autoindex')])}```"
+
     async def setup(self):
         c = await self.db.cursor()
         await c.execute("SELECT * FROM slash_guilds")
-        guilds = [
-            t[0] for t in await c.fetchall() if t[0] in map(lambda g: g.id, self.guilds)
-        ]
+        data = await c.fetchall()
+        guilds = [t for t, in data]
         self.slash_command_guilds = guilds
-        await super().setup()
+        utils.load_extensions(bot, extra_cogs=["jishaku"])
+        await self.create_slash_commands()
 
 
 bot = Breaker()
-utils.load_extensions(bot, extra_cogs=["jishaku"])
 jishaku.Flags.NO_UNDERSCORE = True
+jishaku.Flags.HIDE = True
 
 
 bot.run(os.getenv("BREAKER_TOKEN"))

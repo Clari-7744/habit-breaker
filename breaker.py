@@ -1,11 +1,11 @@
-import discord, utils, jishaku, aiohttp, aiosqlite, os
+import discord, DPyUtils, jishaku, aiohttp, aiosqlite, os
 from discord.ext import commands
 from dotenv import load_dotenv
 
 load_dotenv(verbose=True)
 
 
-class Breaker(utils.Bot):
+class Breaker(DPyUtils.Bot):
     def __init__(self, **kwargs):
         super().__init__(
             commands.when_mentioned_or("&"),
@@ -28,7 +28,7 @@ class Breaker(utils.Bot):
         n = "\n"
         schema = await (
             await bot.db.execute(
-                f"SELECT sql FROM sqlite_master"
+                "SELECT sql FROM sqlite_master"
                 + (
                     " WHERE name IN ({})".format(
                         ", ".join(f"'{table}'" for table in tables)
@@ -46,8 +46,14 @@ class Breaker(utils.Bot):
         data = await c.fetchall()
         guilds = [t for t, in data]
         self.slash_command_guilds = guilds
-        utils.load_extensions(bot, extra_cogs=["jishaku"])
+        DPyUtils.load_extensions(bot, extra_cogs=["jishaku", "DPyUtils.ContextEditor"])
         await self.create_slash_commands()
+
+    async def on_command_error(self, ctx: DPyUtils.Context, error):
+        await super().on_command_error(ctx, error)
+        if isinstance(error, (commands.CommandNotFound, commands.NoPrivateMessage, commands.PrivateMessageOnly, commands.CheckFailure)):
+            return await ctx.send(str(error))
+        return await ctx.send("an error has occurred, please ping clari and ask her to check the logs lol")
 
 
 bot = Breaker()

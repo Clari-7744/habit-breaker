@@ -3,7 +3,7 @@ from discord.ext import commands
 
 
 class OwnerCog(commands.Cog):
-    def __init__(self, bot: utils.Bot):
+    def __init__(self, bot: DPyUtils.Bot):
         self.bot = bot
 
     @commands.command(name="addslash")
@@ -15,9 +15,8 @@ class OwnerCog(commands.Cog):
         await (
             ctx.message.add_reaction("✅")
             if not ctx.interaction
-            else ctx.send(f"Added {guild_id}", ephemeral=True)
-        )
+            else ctx.send(f"Added {guild_id}", ephemeral=True))
 
 
-def setup(bot: utils.Bot):
+def setup(bot: DPyUtils.Bot):
     bot.add_cog(OwnerCog(bot))

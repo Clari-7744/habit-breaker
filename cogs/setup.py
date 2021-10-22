@@ -117,6 +117,18 @@ class SetupCog(commands.Cog):
         await self.bot.db.commit()
         await ctx.send(f"Removed `{habit}`", ephemeral=True)
 
+    @commands.command(name='invite')
+    async def invite(self, ctx: DPyUtils.Context, *, guild_id:int=None):
+        """
+        Get an invite link for the bot.
+        """
+        def url(bot:bool=0):
+            return discord.utils.oauth_url(self.bot.user.id, permissions=discord.Permissions(139586784320), scopes=('bot' if bot else '', 'applications.commands'), guild=discord.Object(guild_id) if guild_id else discord.utils.MISSING)
+        t=f"[Invite Bot]({url(1)})\n[Slash Commands Only]({url()})"
+        if ctx.interaction:
+            return await ctx.send(t)
+        await ctx.send(embed=discord.Embed(title="Invite", description=t, color=discord.Color.random()))
+
 
 def setup(bot: DPyUtils.Bot):
     bot.add_cog(SetupCog(bot))

@@ -41,15 +41,15 @@ class Breaker(DPyUtils.Bot):
         return f"```sql\n{n.join([''.join(x) for x in schema if any(x) and not x[0].startswith('sqlite_autoindex')])}```"
 
     async def setup(self):
-        c = await self.db.cursor()
-        await c.execute("SELECT * FROM slash_guilds")
-        data = await c.fetchall()
-        guilds = [t for t, in data]
-        self.slash_command_guilds = guilds
+#        c = await self.db.cursor()
+#        await c.execute("SELECT * FROM slash_guilds")
+#        data = await c.fetchall()
+#        guilds = [t for t, in data]
+#        self.slash_command_guilds = guilds
         DPyUtils.load_extensions(bot, extra_cogs=["jishaku", "DPyUtils.ContextEditor"])
         await self.create_slash_commands()
 
-    async def on_command_error(self, ctx: DPyUtils.Context, error):
+    async def on_command_error(self, ctx: DPyUtils.Context, error): #pylint: disable=arguments-renamed
         await super().on_command_error(ctx, error)
         if isinstance(error, (commands.CommandNotFound, commands.NoPrivateMessage, commands.PrivateMessageOnly, commands.CheckFailure)):
             return await ctx.send(str(error))

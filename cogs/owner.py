@@ -1,4 +1,4 @@
-import discord, utils
+import discord, DPyUtils
 from discord.ext import commands
 
 
@@ -8,7 +8,7 @@ class OwnerCog(commands.Cog):
 
     @commands.command(name="addslash")
     @commands.is_owner()
-    async def addslash(self, ctx: utils.Context, guild_id: int):
+    async def addslash(self, ctx: DPyUtils.Context, guild_id: int):
         async with self.bot.db.cursor() as c:
             await c.execute("INSERT INTO slash_guilds VALUES (?)", (guild_id,))
         await self.bot.db.commit()

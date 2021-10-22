@@ -84,10 +84,9 @@ class SetupCog(commands.Cog):
             )
         p = p[0]
         await cur.execute("SELECT COUNT(*) FROM logs WHERE user_id=? AND habit=?", data)
-        num = await cur.fetchone()
+        num = (await cur.fetchone())[0]
         if not num:
             return await ctx.send(f"You haven't logged any `{p}` yet.", ephemeral=True)
-        num = num[0]
         await cur.execute("SELECT timestamp FROM logs WHERE user_id=? AND habit=?", data)
         ts, = await cur.fetchone()
         await ctx.send(embed=discord.Embed(title=f"{p}", description=f"# of occurrences: `{num}`\nLast ocurrence: <t:{ts}:F>\nYou've been {p} free for {duration.strfdur(datetime.datetime.now().timestamp()-ts)}"), ephemeral=True)

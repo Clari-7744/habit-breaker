@@ -15,7 +15,8 @@ class OwnerCog(commands.Cog):
         await (
             ctx.message.add_reaction("✅")
             if not ctx.interaction
-            else ctx.send(f"Added {guild_id}", ephemeral=True))
+            else ctx.send(f"Added {guild_id}", ephemeral=True)
+        )
 
 
 def setup(bot: DPyUtils.Bot):
